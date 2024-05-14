@@ -19,6 +19,7 @@ RewriteEngine On
 # General rewrite
 RewriteRule ^/$ index.php [L]
 RewriteRule ^login$ pages/login.php [L]
+RewriteRule ^orders$ pages/orders.php [L]
 
 
 

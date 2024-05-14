@@ -1,8 +1,8 @@
 <?php
 $hn = 'localhost'; 
 $un = 'fastburger_admin'; 
-$pw = 'YSAPNi_t7AKe9WV('; 
-$db = 'fast_burger'; 
+$pw = '.IQWUWrme.TrTnSI'; 
+$db = 'fastburgers'; 
 
 $conn = mysqli_connect($hn, $un, $pw, $db);
 if (!$conn){
@@ -11,4 +11,3 @@ if (!$conn){
 else {
     echo('connection is successful'); 
 }
-// pause the video and copy this code on the the dbConfig file within the config folder
