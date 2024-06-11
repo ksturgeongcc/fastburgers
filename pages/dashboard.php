@@ -3,61 +3,46 @@ include '../config/dbConfig.php';
 include '../partials/header.php';
 include '../partials/navigation.php';
 
-// totalOrders
-$totalOrders = $conn->prepare("SELECT
-count(order_id)
- from `order` 
-");
+// Total Orders
+$totalOrders = $conn->prepare("SELECT COUNT(order_id) FROM `order`");
 $totalOrders->execute();
 $totalOrders->store_result();
 $totalOrders->bind_result($orders);
 $totalOrders->fetch();
 
-
 // Unique Customers
-$customer = $conn->prepare("SELECT
-count(distinct customer_name )
- from customer
-");
+$customer = $conn->prepare("SELECT COUNT(DISTINCT customer_name) FROM customer");
 $customer->execute();
 $customer->store_result();
 $customer->bind_result($uniqueCustomers);
 $customer->fetch();
 
-
-// payment type
-$payment = $conn->prepare("SELECT
-    p.payment_type,
-    COUNT(o.fk_payment_id)
-FROM 
-    `order` o
-INNER JOIN 
-    payment p ON o.fk_payment_id = p.payment_id
-GROUP BY 
-    p.payment_type
-");
+// Payment Type
+$payment = $conn->prepare("SELECT p.payment_type, COUNT(o.fk_payment_id) FROM `order` o INNER JOIN payment p ON o.fk_payment_id = p.payment_id GROUP BY p.payment_type");
 $payment->execute();
 $payment->store_result();
 $payment->bind_result($paymentType, $paymentCount);
 
-// top staff
-$staff = $conn->prepare("SELECT 
-COUNT(o.order_id) AS order_count,
-s.staff_firstname,
-s.staff_surname,
-s.staff_shift
-FROM `order` o
-LEFT JOIN staff s ON o.fk_staff_id = s.staff_id
-GROUP BY s.staff_id, s.staff_firstname, s.staff_surname, s.staff_shift
-ORDER BY order_count DESC
-LIMIT 2
-");
+// Top Staff
+$staff = $conn->prepare("SELECT COUNT(o.order_id) AS order_count, s.staff_firstname, s.staff_surname, s.staff_shift FROM `order` o LEFT JOIN staff s ON o.fk_staff_id = s.staff_id GROUP BY s.staff_id, s.staff_firstname, s.staff_surname, s.staff_shift ORDER BY order_count DESC LIMIT 2");
 $staff->execute();
 $staff->store_result();
 $staff->bind_result($totalOrders, $firstName, $surname, $shift);
+
+// Stock Information
+$stock = $conn->prepare("SELECT item_name, stock_limit, restock_threshold FROM item");
+$stock->execute();
+$stock->store_result();
+$stock->bind_result($itemName, $stockLimit, $restockThreshold);
+
+// Most Popular Items
+$popularItems = $conn->prepare("SELECT i.item_name, COUNT(oi.fk_item_id) as item_count FROM order_items oi INNER JOIN item i ON oi.fk_item_id = i.item_id GROUP BY oi.fk_item_id ORDER BY item_count DESC LIMIT 1");
+$popularItems->execute();
+$popularItems->store_result();
+$popularItems->bind_result($popularItemName, $popularItemCount);
+$popularItems->fetch();
 ?>
 <div class="min-h-screen bg-gray-50/50">
-  
   <div class="p-4">
     <div class="mt-12">
       <div class="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
@@ -71,7 +56,7 @@ $staff->bind_result($totalOrders, $firstName, $surname, $shift);
           </div>
           <div class="p-4 text-right">
             <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Orders</p>
-            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900"></h4>
+            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900"><?= $orders ?></h4>
           </div>
           <div class="border-t border-blue-gray-50 p-4">
             <p class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600">
@@ -126,11 +111,48 @@ $staff->bind_result($totalOrders, $firstName, $surname, $shift);
           </div>
           <div class="p-4 text-right">
             <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Customers</p>
+            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900"><?= $uniqueCustomers ?></h4>
+          </div>
+          <div class="border-t border-blue-gray-50 p-4">
+            <p class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600">
+              <strong class="text-red-500"><?= $uniqueCustomers ?></strong> different customers have ordered from you!
+            </p>
+          </div>
+        </div>
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+          <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-yellow-600 to-yellow-400 text-white shadow-yellow-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-6 h-6 text-white">
+              <path d="M3 5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25v13.5A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75V5.25zM4.5 5.25v13.5c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75V5.25a.75.75 0 00-.75-.75H5.25a.75.75 0 00-.75.75zm7.875 6.375h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25h-2.25a.75.75 0 010-1.5h2.25v-2.25a.75.75 0 011.5 0v2.25z"></path>
+            </svg>
+          </div>
+          <div class="p-4 text-right">
+            <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Stock</p>
+            <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900"></h4>
+          </div>
+          <div class="border-t border-blue-gray-50 p-4">
+            <?php while($stock->fetch()) : ?>
+            <p class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600">
+              <?= htmlspecialchars($itemName) ?>: <?= htmlspecialchars($stockLimit) ?> (Threshold: <?= htmlspecialchars($restockThreshold) ?>)
+            </p>
+            <?php if ($stockLimit < $restockThreshold): ?>
+              <p class="text-red-600">Warning: <?= htmlspecialchars($itemName) ?> stock is below the threshold!</p>
+            <?php endif; ?>
+            <?php endwhile ?>
+          </div>
+        </div>
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+          <div class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-red-600 to-red-400 text-white shadow-red-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="w-6 h-6 text-white">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="p-4 text-right">
+            <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Most Popular Item</p>
             <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900"></h4>
           </div>
           <div class="border-t border-blue-gray-50 p-4">
             <p class="block antialiased font-sans text-base leading-relaxed font-normal text-blue-gray-600">
-              <strong class="text-red-500"><?= $uniqueCustomers ?></strong> different customers have order from you!
+              <strong class="text-green-500"><?= htmlspecialchars($popularItemName) ?></strong> is the most popular item with <strong class="text-green-500"><?= htmlspecialchars($popularItemCount) ?></strong> orders!
             </p>
           </div>
         </div>

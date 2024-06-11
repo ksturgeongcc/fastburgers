@@ -13,63 +13,66 @@ include '../config/dbConfig.php';
 include '../partials/header.php';
 include '../partials/navigation.php';
 
-// the parameter that was passed from the order page - <td onclick="window.location.href='orderDetails/<?= $oid this 
-// the value of that parameter get caught here using $_GET, I have created a variable again called $oid and given it
-// the value of the the parameter that has been passed.
-// we can now use that data in our new query
+// Get the order ID from the URL parameter
 $oid = $_GET['oid'];
-// this query is very similar to the previous and may differ to yours depending on your setup
-// the main difference is that there is a where clause in this one
-// I have limited the qurey to only show the details with the order number that has been passed from the previous page
-$orderDetails = $conn->prepare("SELECT
-o.order_id,
-o.order_date,
-c.customer_name,
-c.customer_tel,
-st.store_name,
-p.payment_type,
-o.menu_name,
-s.staff_firstname
- from `order` o
- LEFT JOIN customer c ON o.fk_customer_id = c.customer_id
- LEFT JOIN menu_type m ON o.fk_menu_type_id = m.menu_type_id
- LEFT JOIN payment p ON o.fk_payment_id = p.payment_id
- LEFT JOIN staff s ON o.fk_staff_id = s.staff_id
 
- LEFT JOIN store st ON o.fk_store_id = st.store_id
- where o.order_id = $oid
+// Prepare the query to fetch order details including menu information
+$orderDetails = $conn->prepare("
+    SELECT
+        o.order_id,
+        o.order_date,
+        c.customer_name,
+        c.customer_tel,
+        st.store_name,
+        p.payment_type,
+        IFNULL(sm.saver_menu_name, rm.regular_menu_meal_type) AS menu_name,
+        s.staff_firstname
+    FROM `order` o
+    LEFT JOIN customer c ON o.fk_customer_id = c.customer_id
+    LEFT JOIN menu_type m ON o.fk_menu_type_id = m.menu_type_id
+    LEFT JOIN payment p ON o.fk_payment_id = p.payment_id
+    LEFT JOIN staff s ON o.fk_staff_id = s.staff_id
+    LEFT JOIN store st ON o.fk_store_id = st.store_id
+    LEFT JOIN saver_menu sm ON m.fk_saver_id = sm.saver_menu_id
+    LEFT JOIN regular_menu rm ON m.fk_regular_id = rm.regular_menu_id
+    WHERE o.order_id = ?
 ");
+
+// Bind the order ID parameter
+$orderDetails->bind_param("i", $oid);
+
+// Execute the query
 $orderDetails->execute();
 $orderDetails->store_result();
-$orderDetails->bind_result($oid, $date, $customer, $custTel, $store, $payment_type, $menu, $staff);
-// On the orders page we called the fetch() function in a while statements as I wanted ot call all rows
-// I now only want details of one order, so we use the fetch() function at this stage.
-$orderDetails->fetch();
+$orderDetails->bind_result($oid, $date, $customer, $custTel, $store, $payment_type, $menu_name, $staff);
 
+// Fetch the results
+$orderDetails->fetch();
 ?>
 
 <!-- component -->
 <link rel="stylesheet" href="https://cdn.tailgrids.com/tailgrids-fallback.css" />
-<!-- I can now just call the variable created in the bind_result -->
-<!-- the details that I have called is just some of the data that is required -->
-<div class="flex w-full justify-center mt-20">
-    <div class="flex flex-col w-1/4 mb-20">
-        <h2 class="text-xl underline">Customer Details</h2>
-        <p><span class="text-slate-600">Customer Name:</span> <?= $customer ?></p>
-        <p><span class="text-slate-600">Customer Tel:</span> <?= $custTel ?></p>
+<!-- Display the order details -->
+<div class="flex flex-wrap w-full justify-center mt-20">
+    <div class="flex flex-col w-full sm:w-1/2 lg:w-1/4 mb-10 px-4">
+        <h2 class="text-xl underline mb-4">Customer Details</h2>
+        <p><span class="text-slate-600 font-semibold">Customer Name:</span> <?= htmlspecialchars($customer) ?></p>
+        <p><span class="text-slate-600 font-semibold">Customer Tel:</span> <?= htmlspecialchars($custTel) ?></p>
     </div>
-    <div class="flex flex-col w-1/4">
-        <h2 class="text-xl underline">Order Details</h2>
-        <p><span class="text-slate-600">Order Number: </span> <?= $oid ?></p>
-        <p> <span class="text-slate-600">Order Date: </span> <?= $date ?></p>
-        <p> <span class="text-slate-600">Payment Type: </span> <?= $payment_type ?></p>
-        <p> <span class="text-slate-600">Menu Type: </span> <?= $menu ?></p>
+    <div class="flex flex-col w-full sm:w-1/2 lg:w-1/4 mb-10 px-4">
+        <h2 class="text-xl underline mb-4">Order Details</h2>
+        <p><span class="text-slate-600 font-semibold">Order Number: </span> <?= htmlspecialchars($oid) ?></p>
+        <p><span class="text-slate-600 font-semibold">Order Date: </span> <?= htmlspecialchars($date) ?></p>
+        <p><span class="text-slate-600 font-semibold">Payment Type: </span> <?= htmlspecialchars($payment_type) ?></p>
+        <p><span class="text-slate-600 font-semibold">Menu Type: </span> <?= htmlspecialchars($menu_name) ?></p>
     </div>
-    <div class="flex flex-col w-1/4">
-        <h2 class="text-xl underline">Store Details</h2>
-        <p><span class="text-slate-600"> Store Location: </span> <?= $store ?></p>
+    <div class="flex flex-col w-full sm:w-1/2 lg:w-1/4 mb-10 px-4">
+        <h2 class="text-xl underline mb-4">Store Details</h2>
+        <p><span class="text-slate-600 font-semibold">Store Location: </span> <?= htmlspecialchars($store) ?></p>
     </div>
 </div>
 
 <?php
+// Include the footer
 include '../partials/footer.php';
+?>

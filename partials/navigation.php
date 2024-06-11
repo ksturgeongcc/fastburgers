@@ -1,54 +1,37 @@
+<!-- Navigation Component -->
+<nav class="w-full bg-yellow-50">
+    <div class="container m-auto px-2 md:px-12 lg:px-7">
+        <div class="flex flex-wrap items-center justify-between py-3 gap-6 md:py-4 md:gap-0">
+            <div class="w-full px-6 flex justify-between lg:w-max md:px-0">
+                <a href="<?= BASE_PATH ?>index" aria-label="logo" class="flex space-x-2 items-center">
+                    <img src="https://tailus.io/sources/blocks/food-delivery/preview/images/icon.png" class="w-16" alt="tailus logo" width="144" height="133">
+                    <span class="text-4xl font-bold text-yellow-900">Fast <span class="text-yellow-700">Burger</span></span>
+                </a>
 
-<!-- component -->
-<script src="//unpkg.com/alpinejs" defer></script>
-<nav class="z-0 relative" x-data="{open:false,menu:false, lokasi:false}">
-  <div class="relative z-10 bg-yellow-300 shadow">
-    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-      <div class="relative flex items-center justify-between h-16">
-        <div class="flex items-center px-2 lg:px-0">
-          <div class="hidden lg:block lg:ml-2">
-            <div class="flex">
-              <a href="<?= BASE_PATH ?>dashboard" class="ml-4 px-3 py-2 rounded-md text-sm leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 "> Dashboard </a>
-              <a href="<?= BASE_PATH ?>orders" class="ml-4 px-3 py-2 rounded-md text-sm leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 "> Orders </a>
-              <a href="<?= BASE_PATH ?>shifts" class="ml-4 px-3 py-2 rounded-md text-sm leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 "> Staff Shifts </a>
-              <a href="<?= BASE_PATH ?>stock" class="ml-4 px-3 py-2 rounded-md text-sm leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 "> Stock </a>
-              <a href="<?= BASE_PATH ?>staff" class="ml-4 px-3 py-2 rounded-md text-sm leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700 "> staff </a>
-
+                <button aria-label="humburger" id="hamburger" class="relative w-10 h-10 -mr-2 lg:hidden focus:outline-none">
+                    <div aria-hidden="true" id="line1" class="inset-0 w-6 h-0.5 m-auto rounded bg-yellow-900 transition duration-300"></div>
+                    <div aria-hidden="true" id="line2" class="inset-0 w-6 h-0.5 mt-2 m-auto rounded bg-yellow-900 transition duration-300"></div>
+                    <div aria-hidden="true" id="line3" class="inset-0 w-6 h-0.5 mt-2 m-auto rounded bg-yellow-900 transition duration-300"></div>
+                </button>
             </div>
-          </div>
+
+            <div id="menu" class="hidden w-full lg:flex flex-wrap justify-end items-center space-y-6 p-6 rounded-xl bg-yellow-50 md:space-y-0 md:p-0 md:flex-nowrap lg:w-7/12">
+                <div class="flex flex-col lg:flex-row lg:space-x-4 w-full lg:w-auto">
+                    <a href="<?= BASE_PATH ?>dashboard" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Dashboard</a>
+                    <a href="<?= BASE_PATH ?>menu" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Menu</a>
+                    <a href="<?= BASE_PATH ?>orders" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Orders</a>
+                    <a href="<?= BASE_PATH ?>stock" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Stock</a>
+                    <a href="<?= BASE_PATH ?>staff" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Staff</a>
+                    <a href="<?= BASE_PATH ?>shifts" class="px-3 py-2 rounded-md text-lg leading-5 font-medium text-gray-800 font-semibold hover:bg-yellow-500 hover:text-white transition duration-150 ease-in-out cursor-pointer focus:outline-none focus:text-white focus:bg-gray-700">Staff Shifts</a>
+                </div>
+            </div>
         </div>
-        <div class="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-end">
-          <div class="max-w-lg w-full lg:max-w-xs">
-            <label for="search" class="sr-only">Search </label>
-            <form methode="get" action="#" class="relative z-50">
-              <button type="submit" id="searchsubmit" class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                </svg>
-              </button>
-              <input type="text" name="s" id="s" class="block w-full pl-10 pr-3 py-2 border border-transparent rounded-md leading-5 bg-yellow-200 text-gray-300 placeholder-gray-400 focus:outline-none focus:bg-white focus:text-gray-900 sm:text-sm transition duration-150 ease-in-out" placeholder="Search">
-            </form>
-          </div>
-        </div>
-        <div class="flex lg:hidden">
-          <button @click="menu=!menu" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-white transition duration-150 ease-in-out" aria-label="Main menu" aria-expanded="false">
-            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
     </div>
-    <div x-show="menu" class="block md:hidden">
-      <div class="px-2 pt-2 pb-3">
-        <a href="#" class="mt-1 block px-3 py-2 rounded-md text-white font-semibold font-medium hover:bg-yellow-500 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Location </a>
-        <a href="#" class="mt-1 block px-3 py-2 rounded-md text-white font-semibold font-medium hover:bg-yellow-500 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Article </a>
-        <a href="#" class="mt-1 block px-3 py-2 rounded-md text-white font-semibold font-medium hover:bg-yellow-500 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Recipe </a>
-        <a href="#" class="mt-1 block px-3 py-2 rounded-md text-white font-semibold font-medium hover:bg-yellow-500 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Promo </a>
-      </div>
-    </div>
-  </div>
 </nav>
+
+<script>
+    document.getElementById('hamburger').addEventListener('click', function() {
+        var menu = document.getElementById('menu');
+        menu.classList.toggle('hidden');
+    });
+</script>
